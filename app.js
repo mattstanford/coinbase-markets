@@ -39,7 +39,10 @@ var temp = 0;
 //}, 1000);
 
 
-app.get('/', routes.index);
+//app.get('/', routes.index);
+
+//Load controllers
+require('./controllers/index')(app, data);
 
 
 http.createServer(app).listen(app.get('port'), function(){
