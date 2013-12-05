@@ -14,7 +14,7 @@ module.exports = function(graphData) {
 		$.getJSON("https://coinbase.com/api/v1/prices/buy", receivedCoinbaseData);
 		temp = temp + 1;
 		graphData.push(temp);
-	}, 1000);
+	}, 10000);
 	
 };
 
