@@ -1,9 +1,14 @@
-extends layout
-
-block content
-  h1= title
-  p Welcome to #{title}
-  p Data:
+doctype 5
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    
+  body
   
-  each datum in data
-    p #{datum}
+    h1= title
+    p Welcome to #{title}
+    p Data:
+  
+    each datum in data
+      p #{datum}
