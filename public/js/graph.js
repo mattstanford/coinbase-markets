@@ -47,20 +47,20 @@
 				.data(server_data)
 				.enter().append("circle")
 				.attr("cy", function(d) { return y_scale(d["price"]); })
-				.attr("cx", function(d,i) { return x_scale(i); })
+				.attr("cx", function(d) { return x_scale(d["timestamp"]); })
 				.attr("r", 8)
 				.attr("fill", "red");
 	}
 	
 function getYScale(server_data, graphHeight, graphMargin) {
 		
-		var max_value = Math.max.apply(Math, $.map(server_data, function (data) { return data["price"]; }));
+		var max_value = getMaxValue(server_data, "price");
 		
 		//Give the max value a little bit of a buffer
 		max_value = max_value + (10 - (max_value % 10));
 		
 		var y_scale = d3.scale.linear()
-			.domain([0, max_value])
+			.domain([max_value, 0])
 			.range([0 + graphMargin, graphHeight - graphMargin]);
 		
 		return y_scale;
@@ -69,13 +69,34 @@ function getYScale(server_data, graphHeight, graphMargin) {
 	
 	function getXScale(server_data, graphWidth, graphMargin) {
 		
-		var max_value = server_data.length;
+		var minDate = getMinValue(server_data, "timestamp");
+		var maxDate = getMaxValue(server_data, "timestamp");
 		
-		var x_scale = d3.scale.linear()
-		.domain([max_value,0])
-		.range([0 + graphMargin, graphWidth - graphMargin]);
+		var x_scale = d3.time.scale()
+			.domain([minDate, maxDate])
+			.range([0 + graphMargin, graphWidth - graphMargin]);
 		
 		return x_scale;
+	}
+	
+	function getMaxValue(dataArray, property)
+	{
+		var max_value =  Math.max.apply(Math, $.map(dataArray, 
+				function (data) { 
+					return data[property]; 
+				}));
+		
+		return max_value;
+	}
+	
+	function getMinValue(dataArray, property)
+	{
+		var max_value =  Math.min.apply(Math, $.map(dataArray, 
+				function (data) { 
+					return data[property]; 
+				}));
+		
+		return max_value;
 	}
 	
 })();
