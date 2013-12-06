@@ -12,11 +12,11 @@
 		
 		//For now just using test data
 		var test_data = [new PricePoint(1, Date.now()-5000),
-		                 new PricePoint(2, Date.now()-4000),
-		                 new PricePoint(3, Date.now()-3000),
-		                 new PricePoint(4, Date.now()-2000),
-		                 new PricePoint(5, Date.now()-1000),
-		                 new PricePoint(6, Date.now())];
+		                 new PricePoint(14, Date.now()-4000),
+		                 new PricePoint(7, Date.now()-3000),
+		                 new PricePoint(10, Date.now()-2000),
+		                 new PricePoint(2, Date.now()-1000),
+		                 new PricePoint(5, Date.now())];
 		coinbaseDataReceived(test_data);
 	};
 	
@@ -44,6 +44,7 @@
 		var time_range = getTimeRange(server_data);
 	
 		drawGraph_data(graph, server_data, x_scale, y_scale);
+		drawGraph_setMouseEvents(graph);
 		drawGraph_axises(graph, x_scale, y_scale, graphHeight, graphMargin, time_range);
 
 	}
@@ -64,6 +65,8 @@
 			.attr("cy", function(d) { return y_scale(d["price"]); })
 			.attr("cx", function(d) { return x_scale(d["timestamp"]); })
 			.attr("r", 8)
+			.attr("visibility", "hidden")
+			.attr("pointer-events", "all")
 			.attr("fill", color);
 	}
 	
@@ -108,6 +111,84 @@
 	      	.call(yAxis);
 		
 	
+	}
+	
+	function drawGraph_setMouseEvents(graph) {
+		
+		d3.selectAll(".tooltip").remove();
+		var graph = d3.select("#coinbase-graph");
+		
+		var tooltip = d3.select("body").append("div")   
+							.attr("class", "tooltip")               
+							.style("opacity", 0);
+
+		var circles = graph.selectAll("circle");
+		
+		removeHighlights(circles, tooltip);
+		
+		var searchTree = buildSearchTree(circles);
+			
+		graph.on("mousemove", function() { return drawGraph_setMouseMove.call(this, graph, circles, tooltip, searchTree); });	
+		graph.on("mouseout", function() { return removeHighlights(circles, tooltip); });
+
+		
+	}
+	
+	function buildSearchTree(circles) {
+		
+		var points = new Array();
+		
+		//D3 organizes selections into groups; Our selection of all circles will only have 1 group.
+		var circle_array = circles[0];
+		
+		for(var i=0; i<circle_array.length;i++) {
+			var point = [circle_array[i].cx.baseVal.value, circle_array[i].cy.baseVal.value, circle_array[i]];
+			
+			points.push(point);
+		}
+
+		return new KdTree(points);
+		
+	}
+	
+	function drawGraph_setMouseMove(graph, circles, tooltip, searchTree) {
+		
+		var mouse_x_pos = d3.mouse(this)[0];
+		var mouse_y_pos = d3.mouse(this)[1];	
+		
+		var closest_point = searchTree.search([mouse_x_pos, mouse_y_pos]).payload;		
+		var closest_point_selection = d3.select(closest_point);
+		var closest_point_data = closest_point_selection.data()[0];
+		
+		var point_x_coord = closest_point.getBoundingClientRect().left + 20; 
+		var point_y_coord = closest_point.getBoundingClientRect().top + $(document).scrollTop();
+		
+		
+		//Remove any visible tooltips
+		removeHighlights(circles, tooltip);
+		
+		//Make the circle that that is highlighted appear
+		closest_point_selection.attr("visibility", "visible");
+
+		//Setup tooltip
+		tooltip.transition()
+			.duration(0)
+			.style("opacity", .9);
+		//tooltip.html("<br>" + String(closest_point_data.data) + "<br><br>" + String(new Date(closest_point_data.Timestamp)))
+		tooltip.html(String(closest_point_data.price))
+				 .style("left", (point_x_coord) + "px")
+				 .style("top", (point_y_coord) + "px");	
+		
+	}
+	
+	function removeHighlights(circles, tooltip) {
+	
+		circles.attr("visibility", "hidden");
+		
+		tooltip.transition()
+    			.duration(0)        
+    			.style("opacity", 0);
+		
 	}
 	
 	function getYScale(server_data, graphHeight, graphMargin) {
