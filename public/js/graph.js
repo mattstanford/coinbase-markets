@@ -11,7 +11,6 @@
 	window.onload = function() {
 		
 		//For now just using test data
-		//var test_data = [1,2,3,4,5,6,7,8,9,10];
 		var test_data = [new PricePoint(1, Date.now()-5000),
 		                 new PricePoint(2, Date.now()-4000),
 		                 new PricePoint(3, Date.now()-3000),
@@ -28,6 +27,12 @@
 		
 	}
 	
+	/**
+	 * 
+	 * Graph drawing functions
+	 * 
+	 */
+	
 	function drawGraph(server_data) {
 		
 		var graph = d3.select("#coinbase-graph");
@@ -36,8 +41,10 @@
 		var graphMargin = 40;	
 		var y_scale = getYScale(server_data, graphHeight, graphMargin);	
 		var x_scale = getXScale(server_data, graphWidth, graphMargin);
+		var time_range = getTimeRange(server_data);
 	
 		drawGraph_data(graph, server_data, x_scale, y_scale);
+		drawGraph_axises(graph, x_scale, y_scale, graphHeight, graphMargin, time_range);
 
 	}
 	
@@ -74,7 +81,36 @@
 	      .attr("fill", "none");
 	}
 	
-function getYScale(server_data, graphHeight, graphMargin) {
+	function drawGraph_axises(graph, x_scale, y_scale, graphHeight, graphMargin, time_range) {
+		
+		var yAxis = d3.svg.axis()
+					.scale(y_scale)
+					.orient("left")
+					.ticks(10);
+		
+		var xAxis = d3.svg.axis()
+			.scale(x_scale)
+			.tickPadding(8)
+			.orient("bottom");
+	
+		xAxis.ticks(d3.time.seconds, 1).tickFormat(d3.time.format('%H:%M:%S'));
+	
+		graph.selectAll(".axis").remove();
+	
+		graph.append("g")
+	      	.attr("class", "axis")
+	      	.attr("transform", "translate(0," + (graphHeight - graphMargin) + ")")
+	      	.call(xAxis);
+	
+	  	graph.append("g")
+	      	.attr("class", "axis")
+	      	.attr("transform", "translate(" + graphMargin + ",0)")
+	      	.call(yAxis);
+		
+	
+	}
+	
+	function getYScale(server_data, graphHeight, graphMargin) {
 		
 		var max_value = getMaxValue(server_data, "price");
 		
@@ -101,6 +137,11 @@ function getYScale(server_data, graphHeight, graphMargin) {
 		return x_scale;
 	}
 	
+	/*
+	 * Utility functions
+	 * 
+	 */
+	
 	function getMaxValue(dataArray, property)
 	{
 		var max_value =  Math.max.apply(Math, $.map(dataArray, 
@@ -119,6 +160,14 @@ function getYScale(server_data, graphHeight, graphMargin) {
 				}));
 		
 		return max_value;
+	}
+	
+	function getTimeRange(dataArray)
+	{
+		var max_value = getMaxValue(dataArray, "timestamp");
+		var min_value = getMinValue(dataArray, "timestamp");
+		
+		return max_value - min_value;
 	}
 	
 })();
