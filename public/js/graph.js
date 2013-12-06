@@ -43,13 +43,35 @@
 	
 	function drawGraph_data(graph, server_data, x_scale, y_scale)
 	{
-			graph.selectAll("circle")
-				.data(server_data)
-				.enter().append("circle")
-				.attr("cy", function(d) { return y_scale(d["price"]); })
-				.attr("cx", function(d) { return x_scale(d["timestamp"]); })
-				.attr("r", 8)
-				.attr("fill", "red");
+		var color = "red";
+		drawGraph_data_points(graph, server_data, x_scale, y_scale, color);
+		drawGraph_data_line(graph, server_data, x_scale, y_scale, color);
+
+	}
+	
+	function drawGraph_data_points(graph, server_data, x_scale, y_scale, color)
+	{
+		graph.selectAll("circle")
+			.data(server_data)
+			.enter().append("circle")
+			.attr("cy", function(d) { return y_scale(d["price"]); })
+			.attr("cx", function(d) { return x_scale(d["timestamp"]); })
+			.attr("r", 8)
+			.attr("fill", color);
+	}
+	
+	function drawGraph_data_line(graph, server_data, x_scale, y_scale, color)
+	{
+		var lineFunction = d3.svg.line()
+        	.x(function(d) { return x_scale(new Date(d.timestamp)); })
+        	.y(function(d) { return y_scale(d.price); })
+        	.interpolate("linear");
+		
+		 graph.append("path")
+	      .attr("d", lineFunction(server_data))
+	      .attr("stroke", color)
+	      .attr("stroke-width", 2)
+	      .attr("fill", "none");
 	}
 	
 function getYScale(server_data, graphHeight, graphMargin) {
