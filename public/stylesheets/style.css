@@ -1,10 +1,7 @@
-body {
--  padding: 50px;
--  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
 
-#stats-graph {
-	height:70%
+#coinbase-graph {
+	/*TODO: Make dynamic in the future */
+	height:400px;
 }
 
 svg path {

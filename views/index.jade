@@ -2,6 +2,7 @@ doctype 5
 html
   head
     title= title
+    link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
     script(src='http://d3js.org/d3.v3.min.js')
@@ -11,6 +12,12 @@ html
   body
   
     h1= title
-    p Welcome to #{title}
   
-    svg#coinbase-graph
+    #content.container-fluid
+      .row-fluid
+        .span10.main.well
+          div
+            h2 
+              span.graph-title Temp Title
+            svg#coinbase-graph.span10
+            
