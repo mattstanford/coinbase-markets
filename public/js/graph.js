@@ -10,6 +10,10 @@
 	
 	window.onload = function() {
 		
+		buttonClicked("/buy", "Buy Price");
+		
+		setButtons();
+		
 		//For now just using test data
 		var test_data = [new PricePoint(1, Date.now()-5000),
 		                 new PricePoint(14, Date.now()-4000),
@@ -19,6 +23,20 @@
 		                 new PricePoint(5, Date.now())];
 		coinbaseDataReceived(test_data);
 	};
+	
+	function setButtons() {
+		
+		$("#category-buy").click( function() { return buttonClicked("/buy", "Buy Price")});
+		$("#category-sell").click( function() { return buttonClicked("/sell", "Sell Price")});
+		
+	}
+	
+	function buttonClicked(requestLink, graphTitle) {
+		
+		$("#graph-title").html(graphTitle);
+		
+		//TODO: get appropriate data requested by 'requestLink' parameter
+	}
 	
 	//This will eventually become a callback funciton
 	function coinbaseDataReceived(server_data) {
