@@ -5,24 +5,25 @@
 ***/
 module.exports = {
 
-  query: function(pg_instance, text, success_cb, error_cb) {
+  query: function(pg_instance, text, callback) {
+	  
+	  console.log("starting query");
 
-    pg_instance.connect(function(err, client, done) {
+    pg_instance.connect(function(conn_err) {
         
-	  client.query(text, function(err, result) {
-		  
-		  if (err) {
-			  error_cb(err, result);
-		  } 
-		  else {
-			  success_cb(result);
-		  }
-          
-          pg_instance.end();
-	  });
-	  
-    });
-	  
-  }
+    	console.log("connect??");
+    	if(conn_err) { 
+    		callback(conn_err, null);
+    	}
+    	else {
+    		console.log("query??");
+    		pg_instance.query(text, function(err, result) {
+			  callback(err, result);
+			  console.log("ending connection");
+			  pg_instance.end();
+    		});
+    	}
   
-};
+    }); //connect
+  } //Query()
+}; //exports
