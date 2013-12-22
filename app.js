@@ -6,6 +6,7 @@
 var express = require('express');
 var http = require('http');
 var path = require('path');
+var pg = require('pg');
 
 var app = express();
 
@@ -26,8 +27,9 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-//Main Data Model (for now)
-var graphData = [];
+//Initialize DB connection
+var conString = "postgres://postgres:password@localhost/Coinbase";
+
 
 //Load controllers
 require('./controllers/coinbaseDataPipe.js')(graphData);
