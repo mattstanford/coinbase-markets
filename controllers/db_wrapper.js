@@ -3,28 +3,33 @@
   Wrapper for PG module
 
 ***/
+var pg = require('pg'); 
+var Q = require('q');
+
 module.exports = {
 
   conString: "postgres://postgres:password@localhost/Coinbase",
 
-  query: function(text, callback) {
-	
-	  var pg = require('pg'); 
-
+  query: function(text) {
+	  
+	  var deferred = Q.defer();  
+	  
 	  var client = new pg.Client(this.conString);	  
-
 	  client.connect(function(conn_err) {
         
 	    if(conn_err) { 
-          callback(conn_err, null);
+	      deferred.reject(new Error(conn_err));
         }
         else {
           client.query(text, function(query_err, result) {
-        	  callback(query_err, result);
-			  client.end();
+        	  deferred.resolve(query_err, result);
+        	  client.end();
     	    });
     	}
   
-      }); //connect
+      }); //connect  
+	  
+	  return deferred.promise;
+	  
   } //query
 }; //exports
