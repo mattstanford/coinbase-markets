@@ -5,25 +5,26 @@
 ***/
 module.exports = {
 
-  query: function(pg_instance, text, callback) {
-	  
-	  console.log("starting query");
+  conString: "postgres://postgres:password@localhost/Coinbase",
 
-    pg_instance.connect(function(conn_err) {
+  query: function(text, callback) {
+	
+	  var pg = require('pg'); 
+
+	  var client = new pg.Client(this.conString);	  
+
+	  client.connect(function(conn_err) {
         
-    	console.log("connect??");
-    	if(conn_err) { 
-    		callback(conn_err, null);
-    	}
-    	else {
-    		console.log("query??");
-    		pg_instance.query(text, function(err, result) {
-			  callback(err, result);
-			  console.log("ending connection");
-			  pg_instance.end();
-    		});
+	    if(conn_err) { 
+          callback(conn_err, null);
+        }
+        else {
+          client.query(text, function(query_err, result) {
+        	  callback(query_err, result);
+			  client.end();
+    	    });
     	}
   
-    }); //connect
-  } //Query()
+      }); //connect
+  } //query
 }; //exports
