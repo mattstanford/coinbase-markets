@@ -1,22 +1,26 @@
 
 var db = require('./controllers/db_wrapper.js');
 
+var success_callback = function(err, result) {
+	 
+	 if(err) {
+		 console.log(err);
+	 }
+	 else {
+		 console.log("Query success!");
+	 }
+};
+
+var error_callback =    function(reason) {
+	console.log("General DB error");
+	console.log(reason);
+};
+
 //First drop the original tables
-db.query('DROP TABLE buy')
-  .then(  function(err, result) {
-		 
-		 if(err) {
-			 console.log(err);
-		 }
-		 else {
-			 console.log("Drop Table success!");
-		 }
-	 },
-    function(reason) {
-    	console.log("Error Dropping table");
-    	console.log(reason);
-    })
-    .then(function() {
+db.query('DROP TABLE buy').then( success_callback, error_callback)
+
+//Re-create the tables
+.then(function() {
     	
     	return db.query('CREATE TABLE buy(' +
 		   		'id bigserial primary key, ' +
@@ -24,7 +28,6 @@ db.query('DROP TABLE buy')
 		   		'price double precision NOT NULL' +
 		   		')');
     	
-    })
-    .then(function(err, result) { console.log("Create table success!"); });
+    }).then(success_callback, error_callback);
     		
 
