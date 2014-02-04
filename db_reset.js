@@ -1,5 +1,6 @@
 
-var db = require('./controllers/db_wrapper.js');
+var conString = "postgres://postgres:password@localhost/Coinbase";
+var db = require('./controllers/db_wrapper.js')(conString);
 
 var success_callback = function(err, result) {
 	 
