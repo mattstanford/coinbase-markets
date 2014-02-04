@@ -1,5 +1,8 @@
 
-module.exports = function(app, data) {
+module.exports = function(app) {
+	
+	//Change this later
+	data = new Array();
 	
 	app.get('/', function(req, res) {
 	

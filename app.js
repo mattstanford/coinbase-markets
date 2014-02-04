@@ -29,11 +29,12 @@ if ('development' == app.get('env')) {
 
 //Initialize DB connection
 var conString = "postgres://postgres:password@localhost/Coinbase";
+var db = require('./controllers/db_wrapper.js')(conString);
 
 
 //Load controllers
-require('./controllers/coinbaseDataPipe.js')(graphData);
-require('./controllers/index')(app, graphData);
+require('./controllers/coinbaseDataPipe.js')(db);
+require('./controllers/index')(app);
 
 
 http.createServer(app).listen(app.get('port'), "0.0.0.0", function(){

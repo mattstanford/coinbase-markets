@@ -1,5 +1,5 @@
 
-module.exports = function(graphData) {
+module.exports = function(db) {
 	
 	var $ = require('jquery');
 	var temp = 0;
@@ -13,7 +13,7 @@ module.exports = function(graphData) {
 	setInterval(function() {
 		$.getJSON("https://coinbase.com/api/v1/prices/buy", receivedCoinbaseData);
 		temp = temp + 1;
-		graphData.push(temp);
+		//graphData.push(temp);
 	}, 10000);
 	
 };
