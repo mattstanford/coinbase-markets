@@ -33,7 +33,16 @@ module.exports = function(db) {
 			
 			db.query(queryString).then(db_success_callback, db_error_callback);
 			
+		},
+	
+		getPrices: function(isBuyPrice, numPrices, get_success_callback, get_error_callback) {
+			var tableName = isBuyPrice ? "Buy" : "Sell";
+			
+			//Get last N prices
+			var queryString = "SELECT timeposted,price FROM " + tableName + " ORDER BY timeposted DESC LIMIT " + numPrices;
+			
+			db.query(queryString).then(get_success_callback, get_error_callback);
 		}
 		
-	};
-};
+	}; //return
+};//exports
