@@ -31,9 +31,11 @@ if ('development' == app.get('env')) {
 var conString = "postgres://postgres:password@localhost/Coinbase";
 var db = require('./controllers/db_wrapper.js')(conString);
 
+//Model
+var priceModel = require('./models/coinbasePrice.js')(db);
 
 //Load controllers
-require('./controllers/coinbaseDataPipe.js')(db);
+require('./controllers/coinbaseDataPipe.js')(priceModel);
 require('./controllers/index')(app);
 
 
