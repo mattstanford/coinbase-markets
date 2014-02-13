@@ -1,6 +1,9 @@
 
 (function() {
 	
+	var buyLink = "/buyPrices";
+	var sellLink = "/sellPrices";
+	
 	//Data model for the points we will be graphing
 	function PricePoint(price, timestamp) 
 	{	
@@ -10,7 +13,7 @@
 	
 	window.onload = function() {
 		
-		buttonClicked("/buy", "Buy Price");
+		buttonClicked(buyLink, "Buy Price");
 		
 		setButtons();
 		
@@ -26,16 +29,20 @@
 	
 	function setButtons() {
 		
-		$("#category-buy").click( function() { return buttonClicked("/buy", "Buy Price")});
-		$("#category-sell").click( function() { return buttonClicked("/sell", "Sell Price")});
+		$("#category-buy").click( function() { return buttonClicked(buyLink, "Buy Price");});
+		$("#category-sell").click( function() { return buttonClicked(sellLink, "Sell Price");});
 		
 	}
 	
 	function buttonClicked(requestLink, graphTitle) {
 		
 		$("#graph-title").html(graphTitle);
+		getData(requestLink);
+	}
+	
+	function getData(requestLink) {
 		
-		//TODO: get appropriate data requested by 'requestLink' parameter
+		$.getJSON(requestLink, coinbaseDataReceived);
 	}
 	
 	//This will eventually become a callback funciton
