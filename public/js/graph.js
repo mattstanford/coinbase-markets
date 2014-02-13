@@ -210,10 +210,13 @@
 	function getYScale(server_data, graphHeight, graphMargin) {
 		
 		var max_value = getMaxValue(server_data, "price");
-		var min_value = min_value = getMinValue(server_data, "price");
+		var min_value = getMinValue(server_data, "price");
 		
-		//Give the max value a little bit of a buffer
-		//max_value = max_value + (10 - (max_value % 10));
+		//Give the min and max values a buffer, based on a percentage of their range
+		var value_range = max_value - min_value;
+		var value_buffer = value_range * .05;
+		max_value = max_value + value_buffer;
+		min_value = min_value - value_buffer;
 		
 		var y_scale = d3.scale.linear()
 			.domain([max_value, min_value])
