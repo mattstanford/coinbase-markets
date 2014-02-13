@@ -1,2 +1,4 @@
 node_modules
-.project
+.project/test.js
+/.project
+/test.js
