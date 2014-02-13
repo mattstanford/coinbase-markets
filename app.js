@@ -31,12 +31,20 @@ if ('development' == app.get('env')) {
 var conString = "postgres://postgres:password@localhost/Coinbase";
 var db = require('./controllers/db_wrapper.js')(conString);
 
+
 //Model
 var priceModel = require('./models/coinbasePrice.js')(db);
 
+//Routes
+var routes = require("./routes");
+var priceRoutes = require("./routes/price.js")(priceModel);
+app.get('/', routes.index);
+app.get("/buyPrices", priceRoutes.buyPrices);
+
+
 //Load controllers
 require('./controllers/coinbaseDataPipe.js')(priceModel);
-require('./controllers/index')(app, priceModel);
+//require('./controllers/index')(app, priceModel);
 
 
 http.createServer(app).listen(app.get('port'), "0.0.0.0", function(){
