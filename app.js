@@ -36,7 +36,7 @@ var priceModel = require('./models/coinbasePrice.js')(db);
 
 //Load controllers
 require('./controllers/coinbaseDataPipe.js')(priceModel);
-require('./controllers/index')(app);
+require('./controllers/index')(app, priceModel);
 
 
 http.createServer(app).listen(app.get('port'), "0.0.0.0", function(){
