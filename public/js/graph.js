@@ -12,19 +12,10 @@
 	}
 	
 	window.onload = function() {
-		
+				
+		setButtons();
 		buttonClicked(buyLink, "Buy Price");
 		
-		setButtons();
-		
-		//For now just using test data
-		var test_data = [new PricePoint(1, Date.now()-5000),
-		                 new PricePoint(14, Date.now()-4000),
-		                 new PricePoint(7, Date.now()-3000),
-		                 new PricePoint(10, Date.now()-2000),
-		                 new PricePoint(2, Date.now()-1000),
-		                 new PricePoint(5, Date.now())];
-		coinbaseDataReceived(test_data);
 	};
 	
 	function setButtons() {
@@ -88,7 +79,7 @@
 			.data(server_data)
 			.enter().append("circle")
 			.attr("cy", function(d) { return y_scale(d["price"]); })
-			.attr("cx", function(d) { return x_scale(d["timestamp"]); })
+			.attr("cx", function(d) { return x_scale(d["epoch_time"]); })
 			.attr("r", 8)
 			.attr("visibility", "hidden")
 			.attr("pointer-events", "all")
@@ -98,8 +89,8 @@
 	function drawGraph_data_line(graph, server_data, x_scale, y_scale, color)
 	{
 		var lineFunction = d3.svg.line()
-        	.x(function(d) { return x_scale(new Date(d.timestamp)); })
-        	.y(function(d) { return y_scale(d.price); })
+        	.x(function(d) { return x_scale(d["epoch_time"]); })
+        	.y(function(d) { return y_scale(d["price"]); })
         	.interpolate("linear");
 		
 		 graph.append("path")
@@ -219,12 +210,13 @@
 	function getYScale(server_data, graphHeight, graphMargin) {
 		
 		var max_value = getMaxValue(server_data, "price");
+		var min_value = min_value = getMinValue(server_data, "price");
 		
 		//Give the max value a little bit of a buffer
-		max_value = max_value + (10 - (max_value % 10));
+		//max_value = max_value + (10 - (max_value % 10));
 		
 		var y_scale = d3.scale.linear()
-			.domain([max_value, 0])
+			.domain([max_value, min_value])
 			.range([0 + graphMargin, graphHeight - graphMargin]);
 		
 		return y_scale;
@@ -233,11 +225,11 @@
 	
 	function getXScale(server_data, graphWidth, graphMargin) {
 		
-		var minDate = getMinValue(server_data, "timestamp");
-		var maxDate = getMaxValue(server_data, "timestamp");
+		var minDate = getMinValue(server_data, "epoch_time");
+		var maxDate = getMaxValue(server_data, "epoch_time");
 		
 		var x_scale = d3.time.scale()
-			.domain([minDate, maxDate])
+			.domain([new Date(minDate), new Date(maxDate)])
 			.range([0 + graphMargin, graphWidth - graphMargin]);
 		
 		return x_scale;

@@ -4,7 +4,7 @@ module.exports = function(priceModel) {
 
 		buyPrices: function(req, res){
 
-			priceModel.getPrices(true, 5, 
+			priceModel.getPrices(true, 10, 
 		
 					function(result) {
 						  console.log("got prices" + result);
