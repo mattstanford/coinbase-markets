@@ -10,7 +10,7 @@ module.exports = function(app, priceModel) {
 		
 	    function(result) {
 		  console.log(result);
-		  res.render('index', { title: 'Coinbase Markets', data:data });
+		  res.render('index', { title: 'Coinbase Markets', data:result.rows });
 	    },
 	    function(reason) {
 		  

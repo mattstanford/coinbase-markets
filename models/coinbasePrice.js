@@ -39,8 +39,7 @@ module.exports = function(db) {
 			var tableName = isBuyPrice ? "Buy" : "Sell";
 			
 			//Get last N prices
-			//var queryString = "SELECT timeposted,price FROM " + tableName + " ORDER BY timeposted DESC LIMIT " + numPrices;
-			var queryString = "SELECT * from buy";
+			var queryString = "SELECT timeposted,price FROM " + tableName + " ORDER BY timeposted DESC LIMIT " + numPrices;
 			
 			db.query(queryString).then(get_success_callback, get_error_callback);
 		}
