@@ -3,13 +3,13 @@
  * This file handles the Price model
  */
 
-var db_success_callback = function(err, result) {
+var db_success_callback = function(result) {
 	
 	if(err) {
 		 console.log(err);
 	 }
 	 else {
-		 console.log("Query success!");
+		 console.log("Query success, result: " + result);
 	 }
 };
 
@@ -39,7 +39,8 @@ module.exports = function(db) {
 			var tableName = isBuyPrice ? "Buy" : "Sell";
 			
 			//Get last N prices
-			var queryString = "SELECT timeposted,price FROM " + tableName + " ORDER BY timeposted DESC LIMIT " + numPrices;
+			//var queryString = "SELECT timeposted,price FROM " + tableName + " ORDER BY timeposted DESC LIMIT " + numPrices;
+			var queryString = "SELECT * from buy";
 			
 			db.query(queryString).then(get_success_callback, get_error_callback);
 		}

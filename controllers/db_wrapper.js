@@ -24,7 +24,7 @@ module.exports = function(myConString) {
 	        }
 	        else {
 	          client.query(text, function(query_err, result) {
-	        	  deferred.resolve(query_err, result);
+	        	  deferred.resolve(result);
 	        	  client.end();
 	    	    });
 	    	}
