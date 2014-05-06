@@ -1,8 +1,25 @@
 <html>
 <head>
+	<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+	
 </head>
 <body>
 	Test
+	
+	 <div class='span10 main well'>      
+		<div><h2><span id="graph-title"></span></h2></div>
+		<p><a href="#" class="btn btn-primary" id="refresh-button">Refresh</a></p>
+	    <svg id=stats-graph class='span10'></svg>
+	 </div>
+	 <div class='span2'>
+	 	<div class='well sidebar-nav'>
+		  	<ul class="nav nav-list">
+		  		<li><a href="#" id="category-buy">Buy</a></li>
+		  		<li><a href="#" id="category-sell">Sell</a></li>
+		  	</uL>
+		</div>
+	 </div>		        
+		        
 </body>
 		
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
