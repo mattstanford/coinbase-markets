@@ -1,0 +1,10 @@
+{
+  "name": "CoinbaseMarkets",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular":"1.2.16",
+    "angular-d3":"git@github.com:robinboehm/angular-d3-directives.git",
+    "d3":"3.4.6"
+  },
+  "private": true
+}
