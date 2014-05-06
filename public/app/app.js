@@ -1,7 +1,7 @@
 
  var coinbaseMarketsApp = angular.module('coinbaseMarkets', []);
  
-
+/*
  coinbaseMarketsApp.config(function ($routeProvider) {
            
 	$routeProvider
@@ -12,4 +12,4 @@
         })
         .otherwise({ redirectTo: '/' });
  });
- 
+ */
