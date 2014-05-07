@@ -9,7 +9,7 @@
 		 <div class='span10 main well'>      
 			<div><h2><span id="graph-title"></span></h2></div>
 			<p><a href="#" class="btn btn-primary" id="refresh-button">Refresh</a></p>
-		    <svg cbm-graph="" id=stats-graph class='span10'></svg>
+		    <cbm-graph id=stats-graph myTestVar="testVar" class='span10' />
 		 </div>
 		 <div class='span2'>
 		 	<div class='well sidebar-nav'>
@@ -26,6 +26,7 @@
 		
   <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>-->
   <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/d3/d3.js"></script>
   <script src="app/app.js"></script>
   <script src="app/graph/controllers/GraphCtrl.js"></script>
   <script src="app/graph/directives/graphDirective.js"></script>
