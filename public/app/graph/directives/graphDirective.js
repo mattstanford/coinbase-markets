@@ -8,9 +8,262 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 
 			console.log("directive doing stuff");
 			
+			//Data model for the points we will be graphing
+			function PricePoint(price, timestamp) 
+			{	
+				this.price = price;
+				this.timestamp = timestamp;
+			}
+			
 			scope.$watch('testVar', function() {
+				
+				var test_data = [new PricePoint(1, Date.now()-5000),
+				                 new PricePoint(2, Date.now()-4000),
+				                 new PricePoint(3, Date.now()-3000),
+				                 new PricePoint(4, Date.now()-2000),
+				                 new PricePoint(5, Date.now()-1000),
+				                 new PricePoint(6, Date.now())];
+				
 				console.log("testVar changed!");
+				drawGraph(test_data);
 			});
+			
+			
+			function drawGraph(server_data) {
+				
+				//var graph = d3.select("#coinbase-graph");
+				//var graphHeight = $("#coinbase-graph").height();
+				//var graphWidth = $("#coinbase-graph").width();
+				
+				var graphHeight = 400;
+				var graphWidth = 400;
+				
+				var graph = d3.select(element[0])
+				  .append("svg")
+				  .attr('width', graphWidth)
+				  .attr('height', graphHeight)
+				  .append("g");
+				  //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+				
+				var graphMargin = 40;	
+				var y_scale = getYScale(server_data, graphHeight, graphMargin);	
+				var x_scale = getXScale(server_data, graphWidth, graphMargin);
+				var time_range = getTimeRange(server_data);
+			
+				drawGraph_data(graph, server_data, x_scale, y_scale);
+				//drawGraph_setMouseEvents(graph);
+				drawGraph_axises(graph, x_scale, y_scale, graphHeight, graphMargin, time_range);
+
+			}
+			
+			function drawGraph_data(graph, server_data, x_scale, y_scale)
+			{
+				var color = "red";
+				drawGraph_data_points(graph, server_data, x_scale, y_scale, color);
+				drawGraph_data_line(graph, server_data, x_scale, y_scale, color);
+
+			}
+			
+			function drawGraph_data_points(graph, server_data, x_scale, y_scale, color)
+			{
+				graph.selectAll("circle")
+					.data(server_data)
+					.enter().append("circle")
+					.attr("cy", function(d) { return y_scale(d["price"]); })
+					.attr("cx", function(d) { return x_scale(d["epoch_time"]); })
+					.attr("r", 8)
+					.attr("visibility", "hidden")
+					.attr("pointer-events", "all")
+					.attr("fill", color);
+			}
+			
+			function drawGraph_data_line(graph, server_data, x_scale, y_scale, color)
+			{
+				var lineFunction = d3.svg.line()
+		        	.x(function(d) { return x_scale(d["epoch_time"]); })
+		        	.y(function(d) { return y_scale(d["price"]); })
+		        	.interpolate("linear");
+				
+				 graph.append("path")
+			      .attr("d", lineFunction(server_data))
+			      .attr("stroke", color)
+			      .attr("stroke-width", 2)
+			      .attr("fill", "none");
+			}
+			
+			function drawGraph_axises(graph, x_scale, y_scale, graphHeight, graphMargin, time_range) {
+				
+				var yAxis = d3.svg.axis()
+							.scale(y_scale)
+							.orient("left")
+							.ticks(10);
+				
+				var xAxis = d3.svg.axis()
+					.scale(x_scale)
+					.tickPadding(8)
+					.orient("bottom");
+			
+				xAxis.ticks(d3.time.seconds, 1).tickFormat(d3.time.format('%H:%M:%S'));
+			
+				graph.selectAll(".axis").remove();
+			
+				graph.append("g")
+			      	.attr("class", "axis")
+			      	.attr("transform", "translate(0," + (graphHeight - graphMargin) + ")")
+			      	.call(xAxis);
+			
+			  	graph.append("g")
+			      	.attr("class", "axis")
+			      	.attr("transform", "translate(" + graphMargin + ",0)")
+			      	.call(yAxis);
+				
+			
+			}
+			
+			function drawGraph_setMouseEvents(graph) {
+				
+				d3.selectAll(".tooltip").remove();
+				var graph = d3.select("#coinbase-graph");
+				
+				var tooltip = d3.select("body").append("div")   
+									.attr("class", "tooltip")               
+									.style("opacity", 0);
+
+				var circles = graph.selectAll("circle");
+				
+				removeHighlights(circles, tooltip);
+				
+				var searchTree = buildSearchTree(circles);
+					
+				graph.on("mousemove", function() { return drawGraph_setMouseMove.call(this, graph, circles, tooltip, searchTree); });	
+				graph.on("mouseout", function() { return removeHighlights(circles, tooltip); });
+
+				
+			}
+			
+			function buildSearchTree(circles) {
+				
+				var points = new Array();
+				
+				//D3 organizes selections into groups; Our selection of all circles will only have 1 group.
+				var circle_array = circles[0];
+				
+				for(var i=0; i<circle_array.length;i++) {
+					var point = [circle_array[i].cx.baseVal.value, circle_array[i].cy.baseVal.value, circle_array[i]];
+					
+					points.push(point);
+				}
+
+				return new KdTree(points);
+				
+			}
+			
+			function drawGraph_setMouseMove(graph, circles, tooltip, searchTree) {
+				
+				var mouse_x_pos = d3.mouse(this)[0];
+				var mouse_y_pos = d3.mouse(this)[1];	
+				
+				var closest_point = searchTree.search([mouse_x_pos, mouse_y_pos]).payload;		
+				var closest_point_selection = d3.select(closest_point);
+				var closest_point_data = closest_point_selection.data()[0];
+				
+				var point_x_coord = closest_point.getBoundingClientRect().left + 20; 
+				var point_y_coord = closest_point.getBoundingClientRect().top + $(document).scrollTop();
+				
+				
+				//Remove any visible tooltips
+				removeHighlights(circles, tooltip);
+				
+				//Make the circle that that is highlighted appear
+				closest_point_selection.attr("visibility", "visible");
+
+				//Setup tooltip
+				tooltip.transition()
+					.duration(0)
+					.style("opacity", .9);
+				//tooltip.html("<br>" + String(closest_point_data.data) + "<br><br>" + String(new Date(closest_point_data.Timestamp)))
+				tooltip.html(String(closest_point_data.price))
+						 .style("left", (point_x_coord) + "px")
+						 .style("top", (point_y_coord) + "px");	
+				
+			}
+			
+			function removeHighlights(circles, tooltip) {
+			
+				circles.attr("visibility", "hidden");
+				
+				tooltip.transition()
+		    			.duration(0)        
+		    			.style("opacity", 0);
+				
+			}
+			
+			function getYScale(server_data, graphHeight, graphMargin) {
+				
+				var max_value = getMaxValue(server_data, "price");
+				var min_value = getMinValue(server_data, "price");
+				
+				//Give the min and max values a buffer, based on a percentage of their range
+				var value_range = max_value - min_value;
+				var value_buffer = value_range * .05;
+				max_value = max_value + value_buffer;
+				min_value = min_value - value_buffer;
+				
+				var y_scale = d3.scale.linear()
+					.domain([max_value, min_value])
+					.range([0 + graphMargin, graphHeight - graphMargin]);
+				
+				return y_scale;
+				
+			}
+			
+			function getXScale(server_data, graphWidth, graphMargin) {
+				
+				var minDate = getMinValue(server_data, "epoch_time");
+				var maxDate = getMaxValue(server_data, "epoch_time");
+				
+				var x_scale = d3.time.scale()
+					.domain([new Date(minDate), new Date(maxDate)])
+					.range([0 + graphMargin, graphWidth - graphMargin]);
+				
+				return x_scale;
+			}
+			
+			/*
+			 * Utility functions
+			 * 
+			 */
+			
+			function getMaxValue(dataArray, property)
+			{
+				var max_value =  Math.max.apply(Math, $.map(dataArray, 
+						function (data) { 
+							return data[property]; 
+						}));
+				
+				return max_value;
+			}
+			
+			function getMinValue(dataArray, property)
+			{
+				var max_value =  Math.min.apply(Math, $.map(dataArray, 
+						function (data) { 
+							return data[property]; 
+						}));
+				
+				return max_value;
+			}
+			
+			function getTimeRange(dataArray)
+			{
+				var max_value = getMaxValue(dataArray, "timestamp");
+				var min_value = getMinValue(dataArray, "timestamp");
+				
+				return max_value - min_value;
+			}
+			
+			
 		}
 	 }
 });
