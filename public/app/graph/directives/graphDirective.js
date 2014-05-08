@@ -12,7 +12,7 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 			function PricePoint(price, timestamp) 
 			{	
 				this.price = price;
-				this.timestamp = timestamp;
+				this.epoch_time = timestamp;
 			}
 			
 			scope.$watch('testVar', function() {
@@ -52,7 +52,7 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 				var time_range = getTimeRange(server_data);
 			
 				drawGraph_data(graph, server_data, x_scale, y_scale);
-				//drawGraph_setMouseEvents(graph);
+				drawGraph_setMouseEvents(element);
 				drawGraph_axises(graph, x_scale, y_scale, graphHeight, graphMargin, time_range);
 
 			}
@@ -70,8 +70,12 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 				graph.selectAll("circle")
 					.data(server_data)
 					.enter().append("circle")
-					.attr("cy", function(d) { return y_scale(d["price"]); })
-					.attr("cx", function(d) { return x_scale(d["epoch_time"]); })
+					.attr("cy", function(d) { 
+						console.log("price: " + d["price"]);
+						return y_scale(d["price"]); })
+					.attr("cx", function(d) { 
+						console.log("time: " + d["epoch_time"]);
+						return x_scale(d["epoch_time"]); })
 					.attr("r", 8)
 					.attr("visibility", "hidden")
 					.attr("pointer-events", "all")
@@ -121,10 +125,10 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 			
 			}
 			
-			function drawGraph_setMouseEvents(graph) {
+			function drawGraph_setMouseEvents(element) {
 				
 				d3.selectAll(".tooltip").remove();
-				var graph = d3.select("#coinbase-graph");
+				var graph = d3.select(element[0]);
 				
 				var tooltip = d3.select("body").append("div")   
 									.attr("class", "tooltip")               
