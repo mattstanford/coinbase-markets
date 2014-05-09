@@ -1,19 +1,31 @@
 
 angular.module('coinbaseMarkets').controller('GraphCtrl', function ($scope, coinbaseMarketsService) 
 {
-	$scope.testVar = 0;
+	$scope.data = [];
+	$scope.currentCategory = "Buy";
 	
 	$scope.onBuyClick = function() {
-        console.log("Buy");
-        $scope.testVar = 1;
-        
-        coinbaseMarketsService.testFunction();
-        
+        $scope.currentCategory = "Buy";
+        coinbaseMarketsService.getBuyData(coinbaseDataReceived);       
     }
 	
 	$scope.onSellClick = function() {
-        console.log("Sell");
-        $scope.testVar = 2;
+        $scope.currentCategory = "Sell";
+        coinbaseMarketsService.getSellData(coinbaseDataReceived);
     }
+	
+	$scope.onRefreshClick = function() {
+		
+		
+	}
+	
+	function coinbaseDataReceived(data)
+	{
+		$scope.$apply(function() {
+			console.log("data received: " + data);
+			$scope.data = data;
+		})
+
+	}
  
 });

@@ -1,9 +1,21 @@
 angular.module('coinbaseMarkets').service('coinbaseMarketsService', function () 
 {
+	var buyLink = "/buyPrices";
+	var sellLink = "/sellPrices";
 	
-	this.testFunction = function()
+	this.getBuyData = function(successCallback)
 	{
-		console.log("called service");
+		getData(buyLink, successCallback);
 	}
- 
+	
+	this.getSellData = function(successCallback)
+	{
+		getData(sellLink, successCallback);
+	}
+	
+	function getData(requestLink, successCallback)
+	{
+		$.getJSON(requestLink, successCallback);
+	}
+	
 });

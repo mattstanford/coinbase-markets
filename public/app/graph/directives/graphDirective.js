@@ -28,6 +28,11 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 				drawGraph(test_data);
 			});
 			
+			scope.$watch('data', function(newData, oldData, scope) {
+				console.log("data changed!!!");
+				drawGraph(newData);
+			}, true);
+			
 			
 			function drawGraph(server_data) {
 				
@@ -44,7 +49,6 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 				  .attr('height', graphHeight)
 				  .append("g");
 				  //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
 				
 				var graphMargin = 40;	
 				var y_scale = getYScale(server_data, graphHeight, graphMargin);	
