@@ -71,11 +71,11 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 					.data(server_data)
 					.enter().append("circle")
 					.attr("cy", function(d) { 
-						console.log("price: " + d["price"]);
-						return y_scale(d["price"]); })
+						return y_scale(d["price"]); 
+					})
 					.attr("cx", function(d) { 
-						console.log("time: " + d["epoch_time"]);
-						return x_scale(d["epoch_time"]); })
+						return x_scale(d["epoch_time"]);
+					})
 					.attr("r", 8)
 					.attr("visibility", "hidden")
 					.attr("pointer-events", "all")
