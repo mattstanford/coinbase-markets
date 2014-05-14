@@ -16,7 +16,7 @@ module.exports = function(priceModel) {
 		temp = temp + 1;
 		//graphData.push(temp);
 
-	}, 10000);
+	}, 60000);
 	
 };
 
