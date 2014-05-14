@@ -5,8 +5,10 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 		 restrict: 'E',
 		 scope: true,
 		 link: function (scope, element) {
-
-			console.log("directive doing stuff");
+			
+			var graphHeight = 400;
+			var graphWidth = 400;		
+			drawGraph(element, graphHeight, graphWidth);
 			
 			//Data model for the points we will be graphing
 			function PricePoint(price, timestamp) 
@@ -15,40 +17,27 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 				this.epoch_time = timestamp;
 			}
 			
-			scope.$watch('testVar', function() {
-				
-				var test_data = [new PricePoint(1, Date.now()-5000),
-				                 new PricePoint(2, Date.now()-4000),
-				                 new PricePoint(3, Date.now()-3000),
-				                 new PricePoint(4, Date.now()-2000),
-				                 new PricePoint(5, Date.now()-1000),
-				                 new PricePoint(6, Date.now())];
-				
-				console.log("testVar changed!");
-				drawGraph(test_data);
-			});
-			
 			scope.$watch('data', function(newData, oldData, scope) {
 				console.log("data changed!!!");
-				drawGraph(newData);
+				drawDataOnGraph(newData);
 			}, true);
 			
+			function drawGraph(directiveElement, height, width)
+			{
+				d3.select(directiveElement[0])
+				  .append("svg")
+				  .attr('width', width)
+				  .attr('height', height)
+				  .append("g");
+			}
 			
-			function drawGraph(server_data) {
-				
-				//var graph = d3.select("#coinbase-graph");
-				//var graphHeight = $("#coinbase-graph").height();
-				//var graphWidth = $("#coinbase-graph").width();
+			
+			function drawDataOnGraph(server_data) {
 				
 				var graphHeight = 400;
 				var graphWidth = 400;
 				
-				var graph = d3.select(element[0])
-				  .append("svg")
-				  .attr('width', graphWidth)
-				  .attr('height', graphHeight)
-				  .append("g");
-				  //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				var graph = d3.select(element[0]).select("svg").select("g");
 				
 				var graphMargin = 40;	
 				var y_scale = getYScale(server_data, graphHeight, graphMargin);	
@@ -71,6 +60,8 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 			
 			function drawGraph_data_points(graph, server_data, x_scale, y_scale, color)
 			{
+				graph.selectAll("circle").remove();
+				
 				graph.selectAll("circle")
 					.data(server_data)
 					.enter().append("circle")
@@ -92,6 +83,8 @@ angular.module('coinbaseMarkets').directive('cbmGraph', function ()
 		        	.x(function(d) { return x_scale(d["epoch_time"]); })
 		        	.y(function(d) { return y_scale(d["price"]); })
 		        	.interpolate("linear");
+				
+				graph.selectAll("path").remove();
 				
 				 graph.append("path")
 			      .attr("d", lineFunction(server_data))
