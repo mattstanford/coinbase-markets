@@ -4,26 +4,33 @@ html
     title= title
     link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-    script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js')
-    script(src='http://d3js.org/d3.v3.min.js')
-    script(src='/js/kdtree.js')
-    script(src='/js/graph.js')
     
-  body
+    
+  body(ng-app="coinbaseMarkets")
   
     h1= title
   
-    #content.container-fluid
+    #content.container-fluid(data-ng-controller='GraphCtrl')
       .row-fluid
         .span10.main.well
           div
             h2
               span#graph-title Temp Title
-            svg#coinbase-graph.span10
+            cbm-graph#stats-graph.span10
         .span2
           .well.sidebar-nav
             ul.nav.nav-list
               li
-                a#category-buy(href='#') Buy
+                a#category-buy(href="" ng-click="onBuyClick()") Buy
               li
-                a#category-sell(href='#') Sell
+                a#category-sell(href="" ng-click="onSellClick()") Sell
+              
+  
+    script(src="bower_components/jquery/jquery.js")
+    script(src="bower_components/angular/angular.js")
+    script(src="bower_components/d3/d3.js")
+    script(src="js/kdtree.js")
+    script(src="app/app.js")
+    script(src="app/graph/controllers/GraphCtrl.js")
+    script(src="app/graph/directives/graphDirective.js")
+    script(src="app/graph/services/coinbaseMarketsService.js")
